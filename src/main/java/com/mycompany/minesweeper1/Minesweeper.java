@@ -16,8 +16,8 @@ public class Minesweeper extends JFrame implements GameListener {
     private JPanel startPanel;
     private JPanel gamePanel;
     private Board board;
-    private static final int BOARD_WIDTH = 17 * 15 + 1; // 16 columns, 15 pixels per cell, 1 pixel for border
-    private static final int BOARD_HEIGHT = 16 * 15 + 1 + 30; // 16 rows, 15 pixels per cell, 1 pixel for border, 30 pixels for status bar
+    private static final int BOARD_WIDTH = 16 * 15 + 1; // 16 columns, 15 pixels per cell, 1 pixel for border
+    private static final int BOARD_HEIGHT = 16 * 15 + 1 + 60; // 16 rows, 15 pixels per cell, 1 pixel for border, 30 pixels for status bar
 
     public Minesweeper() {
         initUI();
@@ -49,7 +49,7 @@ public class Minesweeper extends JFrame implements GameListener {
         // Set the start panel as the initial content
         getContentPane().add(startPanel);
 
-        setResizable(false);
+        setResizable(true);
         setTitle("Minesweeper");
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
