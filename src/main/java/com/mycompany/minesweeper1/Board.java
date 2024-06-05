@@ -41,22 +41,22 @@ public class Board extends JPanel {
 
     private int allCells;
     private final JLabel statusbar;
+    private GameListener gameListener;
 
     public Board(JLabel statusbar) {
-
         this.statusbar = statusbar;
         initBoard();
-    
-}
+    }
+
+    public void setGameListener(GameListener listener) {
+        this.gameListener = listener;
+    }
 
     private void initBoard() {
-
         setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
 
         img = new Image[NUM_IMAGES];
-
         for (int i = 0; i < NUM_IMAGES; i++) {
-
             var path = "C:\\Users\\jamar5118\\Documents\\minesweeper\\src\\" + i + ".png";
             img[i] = (new ImageIcon(path)).getImage();
         }
@@ -65,33 +65,25 @@ public class Board extends JPanel {
         newGame();
     }
 
-    private void newGame() {
-
+    public void newGame() {
         int cell;
-
         var random = new Random();
         inGame = true;
         minesLeft = N_MINES;
-
         allCells = N_ROWS * N_COLS;
         field = new int[allCells];
 
         for (int i = 0; i < allCells; i++) {
-
             field[i] = COVER_FOR_CELL;
         }
 
         statusbar.setText(Integer.toString(minesLeft));
-
         int i = 0;
 
         while (i < N_MINES) {
-
             int position = (int) (allCells * random.nextDouble());
 
-            if ((position < allCells)
-                    && (field[position] != COVERED_MINE_CELL)) {
-
+            if ((position < allCells) && (field[position] != COVERED_MINE_CELL)) {
                 int current_col = position % N_COLS;
                 field[position] = COVERED_MINE_CELL;
                 i++;
@@ -154,9 +146,10 @@ public class Board extends JPanel {
                 }
             }
         }
+        repaint();
     }
-    
-    private void find_empty_cells(int j){
+
+    private void find_empty_cells(int j) {
         int current_col = j % N_COLS;
         int cell;
 
@@ -244,25 +237,20 @@ public class Board extends JPanel {
             }
         }
     }
-    
+
     @Override
-    public void paintComponent(Graphics g){
-    
+    public void paintComponent(Graphics g) {
         int uncover = 0;
 
         for (int i = 0; i < N_ROWS; i++) {
-
             for (int j = 0; j < N_COLS; j++) {
-
                 int cell = field[(i * N_COLS) + j];
 
                 if (inGame && cell == MINE_CELL) {
-
                     inGame = false;
                 }
 
                 if (!inGame) {
-
                     if (cell == COVERED_MINE_CELL) {
                         cell = DRAW_MINE;
                     } else if (cell == MARKED_MINE_CELL) {
@@ -272,9 +260,7 @@ public class Board extends JPanel {
                     } else if (cell > MINE_CELL) {
                         cell = DRAW_COVER;
                     }
-
                 } else {
-
                     if (cell > COVERED_MINE_CELL) {
                         cell = DRAW_MARK;
                     } else if (cell > MINE_CELL) {
@@ -283,18 +269,21 @@ public class Board extends JPanel {
                     }
                 }
 
-                g.drawImage(img[cell], (j * CELL_SIZE),
-                        (i * CELL_SIZE), this);
+                g.drawImage(img[cell], (j * CELL_SIZE), (i * CELL_SIZE), this);
             }
         }
 
         if (uncover == 0 && inGame) {
-
             inGame = false;
             statusbar.setText("Game won");
-
+            if (gameListener != null) {
+                gameListener.onGameEnd(true);
+            }
         } else if (!inGame) {
             statusbar.setText("Game lost");
+            if (gameListener != null) {
+                gameListener.onGameEnd(false);
+            }
         }
     }
 
@@ -302,7 +291,6 @@ public class Board extends JPanel {
 
         @Override
         public void mousePressed(MouseEvent e) {
-
             int x = e.getX();
             int y = e.getY();
 
@@ -312,21 +300,16 @@ public class Board extends JPanel {
             boolean doRepaint = false;
 
             if (!inGame) {
-
                 newGame();
                 repaint();
             }
 
             if ((x < N_COLS * CELL_SIZE) && (y < N_ROWS * CELL_SIZE)) {
-
                 if (e.getButton() == MouseEvent.BUTTON3) {
-
                     if (field[(cRow * N_COLS) + cCol] > MINE_CELL) {
-
                         doRepaint = true;
 
                         if (field[(cRow * N_COLS) + cCol] <= COVERED_MINE_CELL) {
-
                             if (minesLeft > 0) {
                                 field[(cRow * N_COLS) + cCol] += MARK_FOR_CELL;
                                 minesLeft--;
@@ -336,24 +319,18 @@ public class Board extends JPanel {
                                 statusbar.setText("No marks left");
                             }
                         } else {
-
                             field[(cRow * N_COLS) + cCol] -= MARK_FOR_CELL;
                             minesLeft++;
                             String msg = Integer.toString(minesLeft);
                             statusbar.setText(msg);
                         }
                     }
-
                 } else {
-
                     if (field[(cRow * N_COLS) + cCol] > COVERED_MINE_CELL) {
-
                         return;
                     }
 
-                    if ((field[(cRow * N_COLS) + cCol] > MINE_CELL)
-                            && (field[(cRow * N_COLS) + cCol] < MARKED_MINE_CELL)) {
-
+                    if ((field[(cRow * N_COLS) + cCol] > MINE_CELL) && (field[(cRow * N_COLS) + cCol] < MARKED_MINE_CELL)) {
                         field[(cRow * N_COLS) + cCol] -= COVER_FOR_CELL;
                         doRepaint = true;
 
@@ -373,7 +350,4 @@ public class Board extends JPanel {
             }
         }
     }
-} 
-        
-        
-    
+}
