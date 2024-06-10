@@ -1,67 +1,52 @@
 package com.mycompany.minesweeper1;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class Minesweeper extends JFrame implements GameListener {
 
-    private JLabel statusbar;
-    private JPanel startPanel;
-    private JPanel gamePanel;
+    private final JLabel statusbar;
     private Board board;
-    private static final int BOARD_WIDTH = 16 * 15 + 1; // 16 columns, 15 pixels per cell, 1 pixel for border
-    private static final int BOARD_HEIGHT = 16 * 15 + 1 + 60; // 16 rows, 15 pixels per cell, 1 pixel for border, 30 pixels for status bar
+    private JLabel gameResultLabel;
 
     public Minesweeper() {
-        initUI();
-    }
-
-    private void initUI() {
-        // Initialize start panel
-        startPanel = new JPanel();
-        startPanel.setLayout(new BorderLayout());
-
-        JLabel titleLabel = new JLabel("Welcome to Minesweeper", JLabel.CENTER);
-        startPanel.add(titleLabel, BorderLayout.CENTER);
-
-        JButton startButton = new JButton("Start");
-        startButton.addActionListener(new StartButtonListener());
-        startPanel.add(startButton, BorderLayout.SOUTH);
-
-        // Initialize game panel
-        gamePanel = new JPanel();
-        gamePanel.setLayout(new BorderLayout());
+        setTitle("Minesweeper");
+        setSize(260, 290);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         statusbar = new JLabel("");
-        gamePanel.add(statusbar, BorderLayout.SOUTH);
+        add(statusbar, BorderLayout.SOUTH);
+
+        var startPanel = new JPanel();
+        var titleLabel = new JLabel("Minesweeper", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 24));
+
+        var startButton = new JButton("Start");
+        startButton.setFont(new Font("Serif", Font.PLAIN, 14));
+        startButton.addActionListener(new StartButtonListener());
+
+        gameResultLabel = new JLabel("", SwingConstants.CENTER);
+        gameResultLabel.setFont(new Font("Serif", Font.PLAIN, 16));
+
+        startPanel.setLayout(new BorderLayout());
+        startPanel.add(titleLabel, BorderLayout.NORTH);
+        startPanel.add(gameResultLabel, BorderLayout.CENTER);
+        startPanel.add(startButton, BorderLayout.SOUTH);
+
+        add(startPanel);
 
         board = new Board(statusbar);
         board.setGameListener(this);
-        gamePanel.add(board, BorderLayout.CENTER);
 
-        // Set the start panel as the initial content
-        getContentPane().add(startPanel);
-
-        setResizable(true);
-        setTitle("Minesweeper");
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
-    }
-
-    private void startNewGame() {
-        board.newGame();
-        getContentPane().removeAll();
-        getContentPane().add(gamePanel);
-        revalidate();
-        repaint();
+        setVisible(true);
     }
 
     private class StartButtonListener implements ActionListener {
@@ -72,22 +57,40 @@ public class Minesweeper extends JFrame implements GameListener {
         }
     }
 
+    private void startNewGame() {
+        getContentPane().removeAll();
+        add(statusbar, BorderLayout.SOUTH);
+        add(board);
+        board.newGame();
+        revalidate();
+        repaint();
+    }
+
     @Override
     public void onGameEnd(boolean won) {
-        EventQueue.invokeLater(() -> {
-            getContentPane().removeAll();
-            JLabel endLabel = new JLabel(won ? "You Won!" : "Game Over", JLabel.CENTER);
-            startPanel.add(endLabel, BorderLayout.NORTH);
-            getContentPane().add(startPanel);
-            revalidate();
-            repaint();
-        });
+        // Game ended, show the start panel again with a win/lose message
+        getContentPane().removeAll();
+        var startPanel = new JPanel();
+        var titleLabel = new JLabel("Minesweeper", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Serif", Font.BOLD, 24));
+
+        var startButton = new JButton("Start");
+        startButton.setFont(new Font("Serif", Font.PLAIN, 14));
+        startButton.addActionListener(new StartButtonListener());
+
+        gameResultLabel.setText(won ? "You won!" : "You lost!");
+
+        startPanel.setLayout(new BorderLayout());
+        startPanel.add(titleLabel, BorderLayout.NORTH);
+        startPanel.add(gameResultLabel, BorderLayout.CENTER);
+        startPanel.add(startButton, BorderLayout.SOUTH);
+
+        add(startPanel);
+        revalidate();
+        repaint();
     }
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            var ex = new Minesweeper();
-            ex.setVisible(true);
-        });
+        new Minesweeper();
     }
 }
