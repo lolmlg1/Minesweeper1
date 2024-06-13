@@ -15,8 +15,10 @@ public class Minesweeper extends JFrame implements GameListener {
     private final JLabel statusbar;
     private Board board;
     private JLabel gameResultLabel;
-
+    
+    //label and panel intialization
     public Minesweeper() {
+        //title and jframe code
         setTitle("Minesweeper");
         setSize(260, 290);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -24,7 +26,7 @@ public class Minesweeper extends JFrame implements GameListener {
 
         statusbar = new JLabel("");
         add(statusbar, BorderLayout.SOUTH);
-
+        
         var startPanel = new JPanel();
         var titleLabel = new JLabel("Minesweeper", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 24));
@@ -35,7 +37,8 @@ public class Minesweeper extends JFrame implements GameListener {
 
         gameResultLabel = new JLabel("", SwingConstants.CENTER);
         gameResultLabel.setFont(new Font("Serif", Font.PLAIN, 16));
-
+        
+        //start panel info
         startPanel.setLayout(new BorderLayout());
         startPanel.add(titleLabel, BorderLayout.NORTH);
         startPanel.add(gameResultLabel, BorderLayout.CENTER);
@@ -48,7 +51,7 @@ public class Minesweeper extends JFrame implements GameListener {
 
         setVisible(true);
     }
-
+    //button listen for start button
     private class StartButtonListener implements ActionListener {
 
         @Override
@@ -56,7 +59,8 @@ public class Minesweeper extends JFrame implements GameListener {
             startNewGame();
         }
     }
-
+    
+    //brings up game panel when press start button
     private void startNewGame() {
         getContentPane().removeAll();
         add(statusbar, BorderLayout.SOUTH);
@@ -65,7 +69,8 @@ public class Minesweeper extends JFrame implements GameListener {
         revalidate();
         repaint();
     }
-
+    
+    //game result code
     @Override
     public void onGameEnd(boolean won) {
         // Game ended, show the start panel again with a win/lose message
@@ -77,9 +82,10 @@ public class Minesweeper extends JFrame implements GameListener {
         var startButton = new JButton("Start");
         startButton.setFont(new Font("Serif", Font.PLAIN, 14));
         startButton.addActionListener(new StartButtonListener());
-
+        //sets the text as either
         gameResultLabel.setText(won ? "You won!" : "You lost!");
-
+        
+        //bring user to start screen
         startPanel.setLayout(new BorderLayout());
         startPanel.add(titleLabel, BorderLayout.NORTH);
         startPanel.add(gameResultLabel, BorderLayout.CENTER);

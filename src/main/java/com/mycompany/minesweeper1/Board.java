@@ -11,7 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class Board extends JPanel {
-
+    
+    //all variables and parameters for board.java
     private final int NUM_IMAGES = 13;
     private final int CELL_SIZE = 15;
 
@@ -51,7 +52,8 @@ public class Board extends JPanel {
     public void setGameListener(GameListener listener) {
         this.gameListener = listener;
     }
-
+    
+    //image reader
     private void initBoard() {
         setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
 
@@ -64,7 +66,8 @@ public class Board extends JPanel {
         addMouseListener(new MinesAdapter());
         newGame();
     }
-
+    
+    //board creation code
     public void newGame() {
         int cell;
         var random = new Random();
@@ -148,7 +151,8 @@ public class Board extends JPanel {
         }
         repaint();
     }
-
+    
+    //empty cell logic
     private void find_empty_cells(int j) {
         int current_col = j % N_COLS;
         int cell;
@@ -237,7 +241,8 @@ public class Board extends JPanel {
             }
         }
     }
-
+    
+    //puts tiles over empty space, number or, mine
     @Override
     public void paintComponent(Graphics g) {
         int uncover = 0;
@@ -272,7 +277,7 @@ public class Board extends JPanel {
                 g.drawImage(img[cell], (j * CELL_SIZE), (i * CELL_SIZE), this);
             }
         }
-
+        //sets text to either won or lost
         if (uncover == 0 && inGame) {
             inGame = false;
             statusbar.setText("Game won");
@@ -286,9 +291,11 @@ public class Board extends JPanel {
             }
         }
     }
-
+    
+    //mouse controller
     private class MinesAdapter extends MouseAdapter {
-
+        
+        //so mouse does something when you click
         @Override
         public void mousePressed(MouseEvent e) {
             int x = e.getX();
